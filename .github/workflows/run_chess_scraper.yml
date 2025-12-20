@@ -1,0 +1,48 @@
+name: Run Chess Game Scraper
+
+on:
+  workflow_dispatch:
+    inputs:
+      player_id:
+        description: 'US Chess Player ID'
+        required: true
+        type: string
+        default: '31979530'
+
+jobs:
+  scrape-games:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          playwright install chromium
+          playwright install-deps chromium
+      
+      - name: Run scraper
+        id: run_scraper
+        run: |
+          python m.py/m.py ${{ inputs.player_id }} > output.json
+      
+      - name: Output JSON result
+        run: |
+          echo "=== Chess Games JSON Output ==="
+          cat output.json
+      
+      - name: Upload JSON artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chess-games-${{ inputs.player_id }}
+          path: output.json
+          retention-days: 7
+
