@@ -50,11 +50,32 @@ This repository includes a GitHub Actions workflow that can be triggered manuall
 
 ### How to Use
 
+#### Option 1: Trigger via GitHub UI
+
 1. Go to the "Actions" tab in your GitHub repository
 2. Select "Run Chess Game Scraper" workflow
 3. Click "Run workflow"
 4. Enter the US Chess Player ID you want to scrape
 5. Click "Run workflow"
+
+#### Option 2: Trigger via Command Line Script
+
+Use the provided Python script to trigger the workflow programmatically:
+
+```bash
+# Set your GitHub token as an environment variable
+export GITHUB_TOKEN='your_github_token_here'
+
+# Trigger the workflow with a player ID
+python trigger_workflow.py <player_id>
+
+# Example
+python trigger_workflow.py 31979530
+```
+
+The script will trigger the workflow and provide a link to view the run status.
+
+### Workflow Output
 
 The workflow will:
 - Run the scraper with your provided player ID
