@@ -1,6 +1,7 @@
 from playwright.sync_api import sync_playwright
 import json
 import sys
+import re
 from urllib.parse import urljoin
 
 # Get player ID from command line argument or use default
@@ -22,8 +23,61 @@ try:
         print(f"Loading player page: {player_url}\n", file=sys.stderr)
         page.goto(player_url, wait_until='networkidle', timeout=30000)
         
-        # Wait for tournament links to appear
+        # Wait for page to load
         page.wait_for_selector('a[href^="/event/"]', timeout=10000)
+        
+        # Extract player name and rating from the player page
+        player_name = "Unknown"
+        player_rating = None
+        
+        try:
+            # Get player name - look for name in various locations
+            # Try common selectors for player name
+            name_elements = page.locator('h1, h2, [class*="name"], [class*="player"]').all()
+            for elem in name_elements[:5]:  # Check first few elements
+                text = elem.inner_text().strip()
+                if text and len(text) > 2 and player_id not in text:
+                    # Clean up the name (remove extra whitespace, newlines)
+                    player_name = ' '.join(text.split())
+                    if len(player_name) > 3:  # Valid name
+                        break
+            
+            # Get rating - look for rating numbers on the page
+            page_text = page.evaluate('() => document.body.innerText')
+            # Look for rating patterns (3-4 digit numbers, often near "Rating" text)
+            rating_patterns = [
+                r'Rating[:\s]+(\d{3,4})',
+                r'(\d{3,4})\s*Rating',
+                r'Regular[:\s]+(\d{3,4})',
+                r'Quick[:\s]+(\d{3,4})',
+                r'Blitz[:\s]+(\d{3,4})',
+            ]
+            
+            for pattern in rating_patterns:
+                match = re.search(pattern, page_text, re.IGNORECASE)
+                if match:
+                    try:
+                        rating = int(match.group(1))
+                        if 100 <= rating <= 3000:  # Valid rating range
+                            player_rating = rating
+                            break
+                    except:
+                        continue
+            
+            # If no rating found with patterns, look for any 3-4 digit number
+            if player_rating is None:
+                numbers = re.findall(r'\b(\d{3,4})\b', page_text)
+                for num_str in numbers:
+                    try:
+                        num = int(num_str)
+                        if 100 <= num <= 3000:
+                            player_rating = num
+                            break
+                    except:
+                        continue
+                        
+        except Exception as e:
+            print(f"Could not extract player info: {e}", file=sys.stderr)
         
         # Get all tournament links
         tournament_link_elements = page.locator('a[href^="/event/"]').all()
@@ -100,9 +154,45 @@ try:
                                             href = id_link.get_attribute('href') if id_link.count() > 0 else None
                                             opp_id = href.split('/')[-1] if href else None
                                             
+                                            # Get opponent rating from the row
+                                            opp_rating = None
+                                            try:
+                                                # Ratings are typically in table cells - look for 3-4 digit numbers
+                                                row_text = row.inner_text()
+                                                # Look for rating patterns in the row
+                                                rating_match = re.search(r'\b(\d{3,4})\b', row_text)
+                                                if rating_match:
+                                                    # Check if it's a valid rating (not pairing number, not year, etc.)
+                                                    potential_rating = int(rating_match.group(1))
+                                                    if 100 <= potential_rating <= 3000:
+                                                        # Make sure it's not the pairing number
+                                                        if str(potential_rating) != pairing_num:
+                                                            opp_rating = potential_rating
+                                                # Alternative: look for rating in specific cells (usually 2nd or 3rd td)
+                                                if opp_rating is None:
+                                                    row_tds = row.locator('td').all()
+                                                    # Rating is often in the 2nd or 3rd column
+                                                    for td_idx in [1, 2]:
+                                                        if len(row_tds) > td_idx:
+                                                            td_text = row_tds[td_idx].inner_text().strip()
+                                                            rating_matches = re.findall(r'\b(\d{3,4})\b', td_text)
+                                                            for match in rating_matches:
+                                                                try:
+                                                                    rating_val = int(match)
+                                                                    if 100 <= rating_val <= 3000 and str(rating_val) != pairing_num:
+                                                                        opp_rating = rating_val
+                                                                        break
+                                                                except:
+                                                                    continue
+                                                            if opp_rating:
+                                                                break
+                                            except Exception as e:
+                                                pass  # Rating extraction failed, continue without it
+                                            
                                             pairing_to_opponent[pairing_num] = {
                                                 "name": opp_name,
-                                                "uscf_id": opp_id
+                                                "uscf_id": opp_id,
+                                                "rating": opp_rating
                                             }
                         except:
                             continue
@@ -138,7 +228,7 @@ try:
                                         color_ind = bottom_divs[0].inner_text().strip() if len(bottom_divs) > 0 else None
                                         color = "White" if color_ind == "⚪️" else "Black" if color_ind == "⚫️" else "Unknown"
                                         
-                                        opponent = pairing_to_opponent.get(opp_num, {"name": "Unknown", "uscf_id": None})
+                                        opponent = pairing_to_opponent.get(opp_num, {"name": "Unknown", "uscf_id": None, "rating": None})
                                         
                                         # Add game to the flat list with only requested fields
                                         game = {
@@ -148,9 +238,11 @@ try:
                                             "opponent_pairing_number": opp_num,
                                             "opponent_name": opponent["name"],
                                             "opponent_uscf_id": opponent["uscf_id"],
+                                            "opponent_rating": opponent.get("rating"),
                                             "color": color,
                                             "player_name": player_name,
-                                            "player_uscf_id": player_id
+                                            "player_uscf_id": player_id,
+                                            "player_rating": player_rating
                                         }
                                         all_games.append(game)
                         except:
@@ -163,8 +255,18 @@ try:
             for idx, game in enumerate(all_games, 1):
                 games_dict[str(idx)] = game
             
-            # Output the games as JSON with numbered keys
-            print(json.dumps(games_dict, indent=2))
+            # Create final output with player info and games
+            output = {
+                "player": {
+                    "name": player_name,
+                    "uscf_id": player_id,
+                    "rating": player_rating
+                },
+                "games": games_dict
+            }
+            
+            # Output the JSON
+            print(json.dumps(output, indent=2))
         
         browser.close()
 

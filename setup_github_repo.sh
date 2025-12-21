@@ -36,3 +36,4 @@ echo ""
 echo "3. After pushing, you can trigger workflows with:"
 echo "   python trigger_workflow.py <player_id>"
 
+
