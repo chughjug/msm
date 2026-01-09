@@ -1,0 +1,58 @@
+name: Extract Chess Players from Text
+
+on:
+  workflow_dispatch:
+    inputs:
+      text:
+        description: 'Text containing chess player information'
+        required: true
+        type: string
+
+jobs:
+  extract-players:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Install and start Ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve > /dev/null 2>&1 &
+          echo "Waiting for Ollama to start..."
+          sleep 10
+          echo "Pulling model..."
+          ollama pull ${{ vars.OLLAMA_MODEL || 'llama3.1:8b' }}
+          echo "Ollama is ready"
+      
+      - name: Run getimport.py
+        id: extract_players
+        env:
+          OLLAMA_URL: ${{ vars.OLLAMA_URL || 'http://localhost:11434/api/chat' }}
+          OLLAMA_MODEL: ${{ vars.OLLAMA_MODEL || 'llama3.1:8b' }}
+        run: |
+          python getimport.py "${{ inputs.text }}" > output.json
+      
+      - name: Output JSON result
+        run: |
+          echo "=== Extracted Players JSON Output ==="
+          cat output.json
+      
+      - name: Upload JSON artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extracted-players
+          path: output.json
+          retention-days: 7
+
