@@ -326,9 +326,36 @@ try:
                     with print_lock:
                         print(f"Year {year} generated an exception: {e}", file=sys.stderr)
         
+        # Sort games by date (most recent first)
+        # Parse dates and sort in descending order
+        def get_sort_key(game):
+            date_str = game.get('date', '')
+            if date_str:
+                try:
+                    # Date format is YYYY-MM-DD
+                    year, month, day = date_str.split('-')
+                    return (int(year), int(month), int(day))
+                except:
+                    # If date parsing fails, use year as fallback
+                    year_str = game.get('year', '0')
+                    try:
+                        return (int(year_str), 0, 0)
+                    except:
+                        return (0, 0, 0)
+            else:
+                # Fallback to year if no date
+                year_str = game.get('year', '0')
+                try:
+                    return (int(year_str), 0, 0)
+                except:
+                    return (0, 0, 0)
+        
+        # Sort games by date descending (most recent first)
+        sorted_games = sorted(all_games, key=get_sort_key, reverse=True)
+        
         # Format output
         games_dict = {}
-        for idx, game in enumerate(all_games, 1):
+        for idx, game in enumerate(sorted_games, 1):
             games_dict[str(idx)] = game
         
         output = {
