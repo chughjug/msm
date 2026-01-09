@@ -32,7 +32,7 @@ jobs:
       - name: Run scraper
         id: run_scraper
         run: |
-          python m.py/m.py ${{ inputs.player_id }} > output.json
+          python m.py/m.py ${{ inputs.player_id }} 2> scraper.log > output.json || (cat scraper.log && exit 1)
       
       - name: Output JSON result
         run: |
