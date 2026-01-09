@@ -33,12 +33,12 @@ def process_year(player_id, year, player_name, max_workers=3):
                 print(f"Processing year {year}...", file=sys.stderr)
             
             page.goto(player_url, wait_until='networkidle', timeout=60000)  # Increased timeout
-            page.wait_for_timeout(5000)  # Increased wait time to avoid rate limiting
+            page.wait_for_timeout(3000)  # Wait time to avoid rate limiting
             
             # Wait for table to be ready
             try:
                 page.wait_for_selector('table, tbody', timeout=10000)
-                page.wait_for_timeout(2000)  # Additional wait for content to render
+                page.wait_for_timeout(1500)  # Additional wait for content to render
             except:
                 pass
             
@@ -98,7 +98,7 @@ def process_year(player_id, year, player_name, max_workers=3):
             # Click the button
             try:
                 games_button.evaluate('button => button.click()')
-                page.wait_for_timeout(3000)  # Increased wait time to avoid rate limiting
+                page.wait_for_timeout(2000)  # Wait time to avoid rate limiting
             except Exception as e:
                 with print_lock:
                     print(f"  Error clicking button for year {year}: {e}", file=sys.stderr)
@@ -155,7 +155,7 @@ def process_year(player_id, year, player_name, max_workers=3):
                 # Click the button
                 try:
                     load_more_button.click()
-                    page.wait_for_timeout(3000)  # Increased wait time to avoid rate limiting
+                    page.wait_for_timeout(2000)  # Wait time to avoid rate limiting (reduced for speed)
                     clicks += 1
                     previous_count = current_count
                     
@@ -286,7 +286,7 @@ try:
         
         print(f"Loading player page: {player_url}\n", file=sys.stderr)
         page.goto(player_url, wait_until='networkidle', timeout=60000)  # Increased timeout
-        page.wait_for_timeout(5000)  # Increased wait time to avoid rate limiting
+        page.wait_for_timeout(3000)  # Wait time to avoid rate limiting
         
         # Extract player name
         player_name = "Unknown"
@@ -380,8 +380,8 @@ try:
         
         # Use ThreadPoolExecutor to process multiple years in parallel
         # Each year gets its own browser instance
-        # Reduced parallelism to avoid rate limiting
-        max_workers = min(2, len(years))  # Process up to 2 years in parallel to avoid rate limiting
+        # Balanced parallelism to avoid rate limiting while maintaining speed
+        max_workers = min(3, len(years))  # Process up to 3 years in parallel
         
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             # Submit all year processing tasks with staggered delays to avoid rate limiting
@@ -389,7 +389,7 @@ try:
             for idx, year in enumerate(years):
                 # Add a small delay between starting each year to avoid hitting rate limits
                 if idx > 0:
-                    time.sleep(2)  # 2 second delay between starting each year
+                    time.sleep(1)  # 1 second delay between starting each year (reduced for speed)
                 future_to_year[executor.submit(process_year, player_id, year, player_name)] = year
             
             # Collect results as they complete
