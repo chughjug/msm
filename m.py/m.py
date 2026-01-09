@@ -101,10 +101,64 @@ def process_year(player_id, year, player_name, max_workers=3):
                 browser.close()
                 return games
             
-            # Get all game rows
+            # Click "Load more..." button repeatedly until all games are loaded
+            max_clicks = 50  # Safety limit
+            clicks = 0
+            previous_count = 0
+            
+            while clicks < max_clicks:
+                # Check for "Load more..." button
+                load_more_button = page.locator('button:has-text("Load more")').first
+                if load_more_button.count() == 0:
+                    # Try alternative selector
+                    load_more_button = page.locator('button:has-text("Load more...")').first
+                
+                if load_more_button.count() == 0:
+                    # No more button found, all games loaded
+                    break
+                
+                # Check current game count
+                current_rows = games_table.locator('tbody tr').all()
+                current_count = len(current_rows)
+                
+                if current_count == previous_count:
+                    # No new games loaded, button might be stuck
+                    break
+                
+                # Click the button
+                try:
+                    load_more_button.click()
+                    page.wait_for_timeout(1500)  # Wait for games to load
+                    clicks += 1
+                    previous_count = current_count
+                    
+                    # Re-find the games table after loading more
+                    games_table = None
+                    all_tables = page.locator('table').all()
+                    for table in all_tables:
+                        thead = table.locator('thead').first
+                        if thead.count() > 0:
+                            thead_text = thead.inner_text().upper()
+                            if "RESULT" in thead_text and "OPPONENT" in thead_text:
+                                if "YEAR" not in thead_text:
+                                    games_table = table
+                                    break
+                    
+                    if games_table is None:
+                        break
+                except Exception as e:
+                    with print_lock:
+                        print(f"  Error clicking Load more button: {e}", file=sys.stderr)
+                    break
+            
+            if clicks > 0:
+                with print_lock:
+                    print(f"  Clicked 'Load more' {clicks} times for year {year}", file=sys.stderr)
+            
+            # Get all game rows after loading all games
             game_rows = games_table.locator('tbody tr').all()
             with print_lock:
-                print(f"  Found {len(game_rows)} games for year {year}", file=sys.stderr)
+                print(f"  Found {len(game_rows)} total games for year {year}", file=sys.stderr)
             
             # Process games - can parallelize rating extraction
             def extract_game_with_rating(game_row, year, player_name, player_id, context):
@@ -156,57 +210,9 @@ def process_year(player_id, year, player_name, max_workers=3):
                         if href:
                             tournament_url = urljoin(base_url, href)
                     
-                    # Extract opponent rating
-                    if tournament_url and opponent_uscf_id:
-                        try:
-                            tournament_page = context.new_page()
-                            try:
-                                tournament_page.goto(tournament_url, wait_until='networkidle', timeout=30000)
-                                tournament_page.wait_for_timeout(2000)
-                                
-                                opponent_links = tournament_page.locator(f'a[href="/player/{opponent_uscf_id}"]').all()
-                                
-                                if len(opponent_links) > 0:
-                                    for link in opponent_links:
-                                        try:
-                                            row = link.locator('xpath=ancestor::tr').first
-                                            if row.count() > 0:
-                                                cells_in_row = row.locator('td').all()
-                                                if len(cells_in_row) > 0:
-                                                    opponent_row = row
-                                                    break
-                                        except:
-                                            continue
-                                
-                                if opponent_row:
-                                    try:
-                                        row_text = opponent_row.inner_text()
-                                        rating_match = re.search(r'\b(\d{3,4})\b', row_text)
-                                        if rating_match:
-                                            potential_rating = int(rating_match.group(1))
-                                            if 100 <= potential_rating <= 3000:
-                                                opponent_rating = potential_rating
-                                        
-                                        if opponent_rating is None:
-                                            cells_in_row = opponent_row.locator('td').all()
-                                            for cell in cells_in_row:
-                                                cell_text = cell.inner_text().strip()
-                                                cell_rating_match = re.search(r'\b(\d{3,4})\b', cell_text)
-                                                if cell_rating_match:
-                                                    potential_rating = int(cell_rating_match.group(1))
-                                                    if 100 <= potential_rating <= 3000:
-                                                        opponent_rating = potential_rating
-                                                        break
-                                    except:
-                                        pass
-                            finally:
-                                try:
-                                    if not tournament_page.is_closed():
-                                        tournament_page.close()
-                                except:
-                                    pass
-                        except:
-                            pass
+                    # Skip opponent rating extraction for speed - can be added back if needed
+                    # Rating extraction requires visiting each tournament page which is very slow
+                    opponent_rating = None
                     
                     game = {
                         "tournament_name": tournament_name,
@@ -288,10 +294,13 @@ try:
             if year_text.isdigit():
                 years.append(year_text)
         
+        # Sort years in descending order (most recent first)
+        years.sort(reverse=True)
+        
         browser.close()
         
-        # Process years in parallel
-        print(f"Processing {len(years)} years in parallel...\n", file=sys.stderr)
+        # Process all years in parallel
+        print(f"Processing {len(years)} years ({', '.join(years)}) in parallel...\n", file=sys.stderr)
         all_games = []
         
         # Use ThreadPoolExecutor to process multiple years in parallel
