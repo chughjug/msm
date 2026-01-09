@@ -1,0 +1,57 @@
+{
+  "16576086": {
+    "error": "Failed to scrape games for player ID 16576086",
+    "player_id": "16576086",
+    "stderr": "Traceback (most recent call last):\n  File \"/Users/aarushchugh/msm/m.py/m.py\", line 1, in <module>\n    from playwright.sync_api import sync_playwright\nModuleNotFoundError: No module named 'playwright'\n"
+  },
+  "30386430": {
+    "error": "Failed to scrape games for player ID 30386430",
+    "player_id": "30386430",
+    "stderr": "Traceback (most recent call last):\n  File \"/Users/aarushchugh/msm/m.py/m.py\", line 1, in <module>\n    from playwright.sync_api import sync_playwright\nModuleNotFoundError: No module named 'playwright'\n"
+  },
+  "30522189": {
+    "error": "Failed to scrape games for player ID 30522189",
+    "player_id": "30522189",
+    "stderr": "Traceback (most recent call last):\n  File \"/Users/aarushchugh/msm/m.py/m.py\", line 1, in <module>\n    from playwright.sync_api import sync_playwright\nModuleNotFoundError: No module named 'playwright'\n"
+  },
+  "30529452": {
+    "error": "Failed to scrape games for player ID 30529452",
+    "player_id": "30529452",
+    "stderr": "Traceback (most recent call last):\n  File \"/Users/aarushchugh/msm/m.py/m.py\", line 1, in <module>\n    from playwright.sync_api import sync_playwright\nModuleNotFoundError: No module named 'playwright'\n"
+  },
+  "30721819": {
+    "error": "Failed to scrape games for player ID 30721819",
+    "player_id": "30721819",
+    "stderr": "Traceback (most recent call last):\n  File \"/Users/aarushchugh/msm/m.py/m.py\", line 1, in <module>\n    from playwright.sync_api import sync_playwright\nModuleNotFoundError: No module named 'playwright'\n"
+  },
+  "31177829": {
+    "error": "Failed to scrape games for player ID 31177829",
+    "player_id": "31177829",
+    "stderr": "Traceback (most recent call last):\n  File \"/Users/aarushchugh/msm/m.py/m.py\", line 1, in <module>\n    from playwright.sync_api import sync_playwright\nModuleNotFoundError: No module named 'playwright'\n"
+  },
+  "31334125": {
+    "error": "Failed to scrape games for player ID 31334125",
+    "player_id": "31334125",
+    "stderr": "Traceback (most recent call last):\n  File \"/Users/aarushchugh/msm/m.py/m.py\", line 1, in <module>\n    from playwright.sync_api import sync_playwright\nModuleNotFoundError: No module named 'playwright'\n"
+  },
+  "31741338": {
+    "error": "Failed to scrape games for player ID 31741338",
+    "player_id": "31741338",
+    "stderr": "Traceback (most recent call last):\n  File \"/Users/aarushchugh/msm/m.py/m.py\", line 1, in <module>\n    from playwright.sync_api import sync_playwright\nModuleNotFoundError: No module named 'playwright'\n"
+  },
+  "3258372": {
+    "error": "Failed to scrape games for player ID 3258372",
+    "player_id": "3258372",
+    "stderr": "Traceback (most recent call last):\n  File \"/Users/aarushchugh/msm/m.py/m.py\", line 1, in <module>\n    from playwright.sync_api import sync_playwright\nModuleNotFoundError: No module named 'playwright'\n"
+  },
+  "32632600": {
+    "error": "Failed to scrape games for player ID 32632600",
+    "player_id": "32632600",
+    "stderr": "Traceback (most recent call last):\n  File \"/Users/aarushchugh/msm/m.py/m.py\", line 1, in <module>\n    from playwright.sync_api import sync_playwright\nModuleNotFoundError: No module named 'playwright'\n"
+  },
+  "32639793": {
+    "error": "Failed to scrape games for player ID 32639793",
+    "player_id": "32639793",
+    "stderr": "Traceback (most recent call last):\n  File \"/Users/aarushchugh/msm/m.py/m.py\", line 1, in <module>\n    from playwright.sync_api import sync_playwright\nModuleNotFoundError: No module named 'playwright'\n"
+  }
+}

@@ -1,0 +1,20 @@
+Test USCF IDs for workflow:
+
+30522189,16576086,31177829,31334125,30386430,32632600,3258372,30529452,30721819,31741338,32639793
+
+Player details:
+- 30522189: Kaushik, Shlok (K-5)
+- 16576086: LeMaisonett, Isabella (K-5)
+- 31177829: Mani, Advik Subhav (K-5)
+- 31334125: Pamidimukkala, Sriyan (K-5)
+- 30386430: Baskar, Sai Krishna (K-8)
+- 32632600: Hernandez, Donovin (K-8)
+- 3258372: Houser, Caleb (K-8)
+- 30529452: Mamidipally, Saketh (K-8)
+- 30721819: Mani, Anirudh Subhav (K-8)
+- 31741338: Pamidimukkala, Sri Saanvi (K-8)
+- 32639793: Stevens, Uriah (K-8)
+
+
+
+

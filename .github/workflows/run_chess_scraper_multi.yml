@@ -1,0 +1,175 @@
+name: Run Chess Game Scraper (Multiple IDs)
+
+on:
+  workflow_dispatch:
+    inputs:
+      player_ids:
+        description: 'US Chess Player IDs (comma-separated)'
+        required: true
+        type: string
+        default: '31979530'
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Parse player IDs and create matrix
+        id: set-matrix
+        run: |
+          PLAYER_IDS="${{ inputs.player_ids }}"
+          # Remove spaces and split by comma
+          IFS=',' read -ra ID_ARRAY <<< "$(echo "$PLAYER_IDS" | tr -d ' ')"
+          
+          # Create matrix JSON
+          MATRIX_JSON="{\"include\":["
+          FIRST=true
+          for ID in "${ID_ARRAY[@]}"; do
+            if [ -n "$ID" ]; then
+              if [ "$FIRST" = false ]; then
+                MATRIX_JSON+=","
+              fi
+              MATRIX_JSON+="{\"player_id\":\"$ID\"}"
+              FIRST=false
+            fi
+          done
+          MATRIX_JSON+="]}"
+          
+          echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
+          echo "Matrix created: $MATRIX_JSON"
+
+  scrape-games:
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+      fail-fast: false
+      max-parallel: 20
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          playwright install chromium
+          playwright install-deps chromium
+      
+      - name: Run scraper for player ID ${{ matrix.player_id }}
+        run: |
+          echo "=== Processing Player ID: ${{ matrix.player_id }} ==="
+          python m.py/m.py ${{ matrix.player_id }} > output.json 2>&1 || {
+            echo "Error processing player ID ${{ matrix.player_id }}" >&2
+            echo "{\"error\": \"Failed to scrape games for player ID ${{ matrix.player_id }}\", \"player_id\": \"${{ matrix.player_id }}\"}" > output.json
+          }
+          echo "=== Output for Player ID: ${{ matrix.player_id }} ==="
+          cat output.json
+      
+      - name: Upload JSON artifact for ${{ matrix.player_id }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: chess-games-${{ matrix.player_id }}
+          path: output.json
+          retention-days: 7
+
+  combine-results:
+    needs: [prepare, scrape-games]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      
+      - name: Combine all JSON files into summary
+        run: |
+          python3 << 'PYTHON_SCRIPT'
+          import json
+          import os
+          import glob
+          
+          summary = {}
+          artifacts_dir = "artifacts"
+          
+          # Find all JSON files in artifact directories
+          json_files = glob.glob(os.path.join(artifacts_dir, "chess-games-*", "output.json"))
+          
+          for file_path in sorted(json_files):
+              # Extract player_id from directory name (chess-games-<player_id>)
+              dir_name = os.path.basename(os.path.dirname(file_path))
+              player_id = dir_name.replace("chess-games-", "")
+              
+              try:
+                  with open(file_path, 'r') as f:
+                      content = f.read().strip()
+                      # Try to parse as JSON, if it fails, store as string
+                      try:
+                          data = json.loads(content)
+                          summary[player_id] = data
+                      except json.JSONDecodeError:
+                          summary[player_id] = {"raw_output": content}
+              except Exception as e:
+                  summary[player_id] = {"error": f"Failed to read file: {str(e)}"}
+          
+          # Create outputs directory and save summary
+          os.makedirs("outputs", exist_ok=True)
+          summary_file = os.path.join("outputs", "summary.json")
+          with open(summary_file, 'w') as f:
+              json.dump(summary, f, indent=2)
+          
+          # Also copy individual files to outputs
+          for file_path in json_files:
+              dir_name = os.path.basename(os.path.dirname(file_path))
+              player_id = dir_name.replace("chess-games-", "")
+              output_file = os.path.join("outputs", f"chess-games-{player_id}.json")
+              with open(file_path, 'r') as src, open(output_file, 'w') as dst:
+                  dst.write(src.read())
+          
+          print("=== Summary JSON ===")
+          print(json.dumps(summary, indent=2))
+          print(f"\nTotal players processed: {len(summary)}")
+          PYTHON_SCRIPT
+      
+      - name: Output combined results
+        run: |
+          echo "=== All Chess Games JSON Outputs ==="
+          for file in outputs/*.json; do
+            if [ -f "$file" ]; then
+              echo ""
+              echo "--- $(basename $file) ---"
+              cat "$file"
+            fi
+          done
+      
+      - name: Upload combined JSON artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: chess-games-multiple
+          path: outputs/*.json
+          retention-days: 7
+      
+      - name: Upload summary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chess-games-summary
+          path: outputs/summary.json
+          retention-days: 7
+

@@ -1,0 +1,5 @@
+{
+  "error": "Failed to scrape games for player ID 30386430",
+  "player_id": "30386430",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/aarushchugh/msm/m.py/m.py\", line 1, in <module>\n    from playwright.sync_api import sync_playwright\nModuleNotFoundError: No module named 'playwright'\n"
+}

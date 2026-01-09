@@ -1,0 +1,67 @@
+CMSCA Header
+
+17th Class Championship 1
+Date: 12/13/2025
+Registration End Date: 2025-12-13 10:00:00
+Registration Total Count: 34
+Schools
+A.C.E. Academy Charter School (10)
+Ardrey Kell High School (2)
+Charles H. Parker Academic Center (2)
+Harrisburg Elementary School (1)
+Indian Land Intermediate School (1)
+Jay M. Robinson Middle School (2)
+Marvin Elementary School (2)
+Metrolina Regional Scholars Academy (1)
+Myers Park High School (2)
+Pleasant Knoll Elementary School (1)
+Randolph Middle School (1)
+Rea Farms STEAM Academy (4)
+Saint Mark Catholic School (2)
+Tega Cay Elementary School (TCES) (1)
+Telra Institute (1)
+W.R. Odell School (Elementary and Primary) (1)
+Reset Filter
+Section	Name	USCF ID	School	City	Grade	Bye	USCF Expiration Dt.	USCF Regular Rating Dt.	USCF Name	Comments	Created Date
+Open	Baskar, Sai Krishna	30386430	Rea Farms STEAM Academy	Charlotte	7	0	2026-04-30	1047	BASKAR, SAI KRISHNA	2025-12-12 23:49:39: USCF Ratings details updated	2025-12-08 20:23:02
+Open	Davis, Cameron	15846423	Myers Park High School	Charlotte	12	0	2026-11-30	984	DAVIS, CAMERON MICHAEL	2025-12-12 23:49:39: USCF Ratings details updated	2025-12-08 12:35:53
+Open	Kalavagunta, Mukund	31861362	Pleasant Knoll Elementary School	Fort Mill	3	0	2026-10-31	1136	KALAVAGUNTA, MUKUND	2025-12-12 23:49:39: USCF Ratings details updated	2025-11-30 20:05:54
+Open	Kanagala, Arahan	31392223	Marvin Elementary School	Marvin	5	0	2026-11-30	1058	KANAGALA, ARAHAN	2025-12-12 23:49:39: USCF Ratings details updated	2025-12-05 09:58:36
+Open	Karthik, Akshay	30380600	Ardrey Kell High School	Charlotte	9	0	2027-02-28	1210	KARTHIK, AKSHAY	2025-12-12 23:49:39: USCF Ratings details updated	2025-11-30 13:11:14
+Open	Kumpatla, Karthikeya	30844229	Jay M. Robinson Middle School	Charlotte	8	0	2026-11-30	1262	KUMPATLA, KARTHIKEYA	2025-12-12 23:49:39: USCF Ratings details updated	2025-12-06 13:05:56
+Open	LeMaisonett, Leonardo	15344736	Myers Park High School	Charlotte	11	0	2026-03-31	1261	LEMAISONETT, LEONARDO A	2025-12-12 23:49:39: USCF Ratings details updated	2025-11-24 21:38:00
+Open	Ranga, Tanuj	31361054	Rea Farms STEAM Academy	Charlotte	7	0	2026-07-31	1206	RANGA, TANUJ	2025-12-12 23:49:39: USCF Ratings details updated	2025-12-07 08:23:15
+Under1000	Anderson, Sasha	32597993	A.C.E. Academy Charter School	Harrisburg	4	0	2027-10-31	Unrated	ANDERSON, SASHA	2025-12-13 00:11:37: USCF Ratings details updated	2025-12-10 01:43:54
+Under1000	Best, Brayden	32592796	A.C.E. Academy Charter School	Harrisburg	3	0	2026-09-30	Unrated	BEST, BRAYDEN	2025-12-13 00:11:37: USCF Ratings details updated	2025-12-01 16:33:15
+Under1000	Garcia, Kevin	32757579	Saint Mark Catholic School	Huntersville	4	0					2025-12-08 05:56:34
+Under1000	Heery, James	30843739	Rea Farms STEAM Academy	Charlotte	4	Round-1					2025-12-12 23:57:07
+Under1000	Hernandez, Donovin	32632600	A.C.E. Academy Charter School	Harrisburg	4	0	2026-10-31	Unrated	HERNANDEZ, DONOVIN	2025-12-13 00:11:37: USCF Ratings details updated	2025-11-30 18:28:39
+Under1000	HOLMES, ZAVI	32639744	A.C.E. Academy Charter School	Harrisburg	3	0	2026-11-30	Unrated	HOLMES, ZAVI	2025-12-13 00:11:37: USCF Ratings details updated	2025-11-30 18:03:48
+Under1000	Houser, Caleb	32583720	A.C.E. Academy Charter School	Harrisburg	7	0	2027-09-30	Unrated	HOUSER, CALEB M	2025-12-13 00:11:37: USCF Ratings details updated	2025-11-22 11:57:40
+Under1000	Jain, Kiyansh	31417441	Charles H. Parker Academic Center	Charlotte	4	0	2026-04-30	597	JAIN, KIYANSH	2025-12-12 23:49:39: USCF Ratings details updated	2025-11-30 16:41:44
+Under1000	Jean, Azrael	32668522	Saint Mark Catholic School	Huntersville	4	0	2026-11-30	Unrated	JEAN, AZRAEL	2025-12-13 00:11:37: USCF Ratings details updated	2025-12-04 06:01:57
+Under1000	Kaistha, Aahna	30571359	Rea Farms STEAM Academy	Charlotte	5	0	2027-08-31	698	KAISTHA, AAHNA	2025-12-12 23:49:39: USCF Ratings details updated	2025-12-01 19:15:53
+Under1000	KAPUBA, Micah Giovanny	32692541	A.C.E. Academy Charter School	Harrisburg	4	0	2026-11-30	Unrated	KAPUBA, MICAH	2025-12-13 00:11:37: USCF Ratings details updated	2025-12-06 08:28:19
+Under1000	KARTHIGEYAN, THARUN	31844372	Jay M. Robinson Middle School	Charlotte	7	0	2026-04-30	981	KARTHIGEYAN, THARUN	2025-12-12 23:49:39: USCF Ratings details updated	2025-12-06 15:33:47
+Under1000	Koka, Sahanvika	31659884	Harrisburg Elementary School	Indian Land	2	0	2026-03-31	343	KOKA, SAHANVIKA	2025-12-12 23:49:39: USCF Ratings details updated	2025-11-30 16:18:12
+Under1000	Konakanchi, Mahidhar	30744109	Ardrey Kell High School	Charlotte	9	0	2025-11-30	1084	KONAKANCHI, MAHIDHAR	2025-12-12 23:49:39: USCF Ratings details updated; 2025-12-13 00:11:37: USCF Ratings details updated; 2025-12-13 00:16:16: USCF Ratings details updated	2025-11-30 16:50:02
+Under1000	Kulkarni, Vivaan	32757583	Indian Land Intermediate School	Indian Land	5	0					2025-11-25 07:39:56
+Under1000	LeMaisonett, Isabella	16576086	Charles H. Parker Academic Center	Charlotte	4	0	2026-03-31	315	LEMAISONETT, ISABELLA C	2025-12-12 23:49:39: USCF Ratings details updated	2025-11-16 14:48:41
+Under1000	LeMaisonett, Sebastian	16400296	Randolph Middle School	Charlotte	7	0	2026-03-31	827	LEMAISONETT, SEBASTIAN N	2025-12-12 23:49:39: USCF Ratings details updated	2025-11-24 21:37:04
+Under1000	McRae, Amun-Re	32645447	A.C.E. Academy Charter School	Harrisburg	3	0	2026-10-31	Unrated	MCRAE, AMUN-RE KENI	2025-12-13 00:11:37: USCF Ratings details updated	2025-11-30 20:40:35
+Under1000	Mugunthan, Aadvika	32543066	Tega Cay Elementary School (TCES)	Tega Cay	2	0	2026-08-31	Unrated	MUGUNTHAN, AADVIKA	2025-12-13 00:11:37: USCF Ratings details updated	2025-12-01 19:02:38
+Under1000	Nagolu, Aaryan	31691967	W.R. Odell School (Elementary and Primary)	Concord	2	0	2026-01-31	967	NAGOLU, AARYAN	2025-12-12 23:49:39: USCF Ratings details updated	2025-12-08 16:35:39
+Under1000	Pittal, Ishanvi	00000	Telra Institute	Charlotte	6	0					2025-12-06 17:08:39
+Under1000	Radeev, Radeev	31944105	Metrolina Regional Scholars Academy	Charlotte	8	0	2027-07-31	652	RADEEV , MAHATHI	2025-12-12 23:49:39: USCF Ratings details updated	2025-12-08 14:29:01
+Under1000	Ratnam, Jivan	30690181	Marvin Elementary School	Marvin	5	0	2027-03-31	318	RATNAM, JIVAN KUMAR	2025-12-12 23:49:39: USCF Ratings details updated	2025-12-12 20:05:34
+Under1000	Stevens, Uriah	32639793	A.C.E. Academy Charter School	Harrisburg	6	0	2027-10-31	Unrated	STEVENS, URIAH	2025-12-13 00:11:37: USCF Ratings details updated	2025-12-01 08:16:29
+Under1000	Terry, Landen	32757562	A.C.E. Academy Charter School	Harrisburg	4	0	0000-00-00	Unrated	TERRY, LANDEN STEPHEN	2025-12-13 00:11:37: USCF Ratings details updated; 2025-12-13 00:16:16: USCF Ratings details updated. Old USCF ID: 32624374	2025-12-04 08:51:39
+Under1000	Villarroel, Camilo	32684510	A.C.E. Academy Charter School	Harrisburg	8	0	2026-11-30	Unrated	VILLARROEL, CAMILO	2025-12-13 00:11:37: USCF Ratings details updated	2025-12-07 10:02:36
+
+
+
+
+
+
+
+

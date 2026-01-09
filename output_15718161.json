@@ -1,0 +1,30 @@
+Loading player page: https://ratings.uschess.org/player/15718161
+
+Found 40 tournaments. Processing first 10 tournaments...
+
+Extracting rating from most recent tournament...
+Could not extract rating from first tournament: Page.wait_for_selector: Timeout 10000ms exceeded.
+Call log:
+  - waiting for locator("a[href^=\"/event/\"]") to be visible
+    18 × locator resolved to 40 elements. Proceeding with the first one: <a href="/event/202512030083" class="truncate font-names text-link hover:underline">…</a>
+
+Processing 10 tournaments in parallel...
+
+Completed 1/10: CCC Tuesday Night Action 125... (0 games)
+Completed 2/10: CCC Wednesday Action Quads 160... (0 games)
+Completed 3/10: CCC WEDNESDAY ACTION QUADS 153... (0 games)
+Completed 4/10: CCC WEDNESDAY ACTION QUADS 147... (0 games)
+Completed 5/10: CCC WEDNESDAY ACTION QUADS 151... (0 games)
+Completed 6/10: 2024 NATIONAL HIGH SCHOOL CHAMPIONSHIP... (0 games)
+Completed 7/10: CCC WEDNESDAY ACTION QUADS 142... (0 games)
+Completed 8/10: CCC WEDNESDAY ACTION QUADS 136... (0 games)
+Completed 9/10: 2024 NATIONAL HS BLITZ CHAMPIONSHIP... (0 games)
+Completed 10/10: CCC WEDNESDAY ACTION QUADS 144... (0 games)
+{
+  "player": {
+    "name": "P.AGARWALLAP.Pulak AGARWALLA",
+    "uscf_id": "15718161",
+    "rating": null
+  },
+  "games": {}
+}
