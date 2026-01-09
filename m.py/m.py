@@ -2,6 +2,7 @@ from playwright.sync_api import sync_playwright
 import json
 import sys
 import re
+import time
 from urllib.parse import urljoin
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
@@ -31,12 +32,38 @@ def process_year(player_id, year, player_name, max_workers=3):
             with print_lock:
                 print(f"Processing year {year}...", file=sys.stderr)
             
-            page.goto(player_url, wait_until='networkidle', timeout=30000)
-            page.wait_for_timeout(2000)
+            page.goto(player_url, wait_until='networkidle', timeout=60000)  # Increased timeout
+            page.wait_for_timeout(5000)  # Increased wait time to avoid rate limiting
             
-            # Find the year row
-            year_tbody = page.locator('tbody.divide-y').first
-            if year_tbody.count() == 0:
+            # Wait for table to be ready
+            try:
+                page.wait_for_selector('table, tbody', timeout=10000)
+                page.wait_for_timeout(2000)  # Additional wait for content to render
+            except:
+                pass
+            
+            # Find the year row - try multiple strategies
+            year_tbody = None
+            selectors = [
+                'tbody.divide-y',
+                'tbody',
+                'table tbody',
+                '[class*="year"] tbody',
+                'table:has(thead) tbody'
+            ]
+            
+            for selector in selectors:
+                try:
+                    tbody_locator = page.locator(selector).first
+                    if tbody_locator.count() > 0:
+                        rows = tbody_locator.locator('tr').all()
+                        if len(rows) > 0:
+                            year_tbody = tbody_locator
+                            break
+                except:
+                    continue
+            
+            if year_tbody is None:
                 year_tbody = page.locator('tbody').first
             
             year_rows = year_tbody.locator('tr').all()
@@ -71,7 +98,7 @@ def process_year(player_id, year, player_name, max_workers=3):
             # Click the button
             try:
                 games_button.evaluate('button => button.click()')
-                page.wait_for_timeout(1500)
+                page.wait_for_timeout(3000)  # Increased wait time to avoid rate limiting
             except Exception as e:
                 with print_lock:
                     print(f"  Error clicking button for year {year}: {e}", file=sys.stderr)
@@ -81,7 +108,7 @@ def process_year(player_id, year, player_name, max_workers=3):
             # Find the games table
             games_table = None
             try:
-                page.wait_for_selector('table thead:has-text("Result")', timeout=5000)
+                page.wait_for_selector('table thead:has-text("Result")', timeout=10000)  # Increased timeout
             except:
                 pass
             
@@ -128,7 +155,7 @@ def process_year(player_id, year, player_name, max_workers=3):
                 # Click the button
                 try:
                     load_more_button.click()
-                    page.wait_for_timeout(1500)  # Wait for games to load
+                    page.wait_for_timeout(3000)  # Increased wait time to avoid rate limiting
                     clicks += 1
                     previous_count = current_count
                     
@@ -258,8 +285,8 @@ try:
         page = context.new_page()
         
         print(f"Loading player page: {player_url}\n", file=sys.stderr)
-        page.goto(player_url, wait_until='networkidle', timeout=30000)
-        page.wait_for_timeout(2000)
+        page.goto(player_url, wait_until='networkidle', timeout=60000)  # Increased timeout
+        page.wait_for_timeout(5000)  # Increased wait time to avoid rate limiting
         
         # Extract player name
         player_name = "Unknown"
@@ -274,14 +301,62 @@ try:
         except Exception as e:
             print(f"Could not extract player name: {e}", file=sys.stderr)
         
-        # Find the tbody with year statistics
-        year_tbody = page.locator('tbody.divide-y').first
-        if year_tbody.count() == 0:
-            year_tbody = page.locator('tbody').first
-            if year_tbody.count() == 0:
-                print("No year statistics table found.", file=sys.stderr)
-                browser.close()
-                sys.exit(1)
+        # Find the tbody with year statistics - try multiple strategies with retries
+        year_tbody = None
+        max_retries = 3
+        for retry in range(max_retries):
+            try:
+                # Wait for any table to appear
+                page.wait_for_selector('table, tbody', timeout=10000)
+                page.wait_for_timeout(2000)  # Additional wait for content to render
+                
+                # Try multiple selector strategies
+                selectors = [
+                    'tbody.divide-y',
+                    'tbody',
+                    'table tbody',
+                    '[class*="year"] tbody',
+                    'table:has(thead) tbody'
+                ]
+                
+                for selector in selectors:
+                    try:
+                        tbody_locator = page.locator(selector).first
+                        if tbody_locator.count() > 0:
+                            # Verify it has rows
+                            rows = tbody_locator.locator('tr').all()
+                            if len(rows) > 0:
+                                year_tbody = tbody_locator
+                                print(f"Found year statistics table using selector: {selector} ({len(rows)} rows)", file=sys.stderr)
+                                break
+                    except:
+                        continue
+                
+                if year_tbody is not None:
+                    break
+                    
+            except Exception as e:
+                print(f"Retry {retry + 1}/{max_retries} failed: {e}", file=sys.stderr)
+                if retry < max_retries - 1:
+                    page.wait_for_timeout(3000)
+                    page.reload(wait_until='networkidle', timeout=30000)
+                    page.wait_for_timeout(3000)
+        
+        if year_tbody is None or year_tbody.count() == 0:
+            # Debug: print page content to help diagnose
+            try:
+                page_title = page.title()
+                page_url = page.url
+                print(f"Page title: {page_title}", file=sys.stderr)
+                print(f"Page URL: {page_url}", file=sys.stderr)
+                tables_count = page.locator('table').count()
+                tbody_count = page.locator('tbody').count()
+                print(f"Found {tables_count} tables and {tbody_count} tbody elements on page", file=sys.stderr)
+            except:
+                pass
+            print("No year statistics table found after retries.", file=sys.stderr)
+            browser.close()
+            sys.exit(1)
         
         # Get all year rows and extract years
         year_rows = year_tbody.locator('tr').all()
@@ -305,14 +380,17 @@ try:
         
         # Use ThreadPoolExecutor to process multiple years in parallel
         # Each year gets its own browser instance
-        max_workers = min(5, len(years))  # Process up to 5 years in parallel
+        # Reduced parallelism to avoid rate limiting
+        max_workers = min(2, len(years))  # Process up to 2 years in parallel to avoid rate limiting
         
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            # Submit all year processing tasks
-            future_to_year = {
-                executor.submit(process_year, player_id, year, player_name): year 
-                for year in years
-            }
+            # Submit all year processing tasks with staggered delays to avoid rate limiting
+            future_to_year = {}
+            for idx, year in enumerate(years):
+                # Add a small delay between starting each year to avoid hitting rate limits
+                if idx > 0:
+                    time.sleep(2)  # 2 second delay between starting each year
+                future_to_year[executor.submit(process_year, player_id, year, player_name)] = year
             
             # Collect results as they complete
             for future in as_completed(future_to_year):
